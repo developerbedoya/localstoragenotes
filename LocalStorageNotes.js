@@ -1,8 +1,5 @@
 // Load triggers
-$(document).ready(function() {
-	// Enable Bootstrap Tooltips for buttons
-	$('button').tooltip('enable');
-	
+$(document).ready(function() {	
 	// New note handler
 	$('#btnNewNote').click(function() {
 		openNewNoteModal();
@@ -33,6 +30,9 @@ function updateNoteHandlers() {
 		var noteId = $(this).data('id');
 		openDeleteNoteModal(noteId);
 	});
+	
+	// Enable Bootstrap Tooltips for buttons
+	$('button').tooltip('enable');
 }
 
 // Modal functions
@@ -86,15 +86,13 @@ function openDeleteNoteModal(noteId) {
 
 // html functions
 function updateNotesPanel() {
-	var notesHtml = '				<div class="row">';
+	var notesHtml = '<div class="row">';
 					
 	for (var i = 0; i < pageTempStorage.notes.length; i++) {
-		notesHtml += '					<div class="col-md-3">';
-		notesHtml += noteToHtml(pageTempStorage.notes[i].id);
-		notesHtml += '					</div>';
+		notesHtml += ['<div class="col-md-3">', noteToHtml(pageTempStorage.notes[i].id), '</div>'].join('\n');
 	}
 	
-	notesHtml += 	'				</div>';
+	notesHtml += '</div>';
 	
 	$('#notesPanel').html(notesHtml);
 	
@@ -106,25 +104,8 @@ function noteToHtml(id) {
 	
 	var htmlNote = '';
 	if (note != null) {
-		htmlNote = 	'						<div class="panel panel-default">' + 
-					'							<div class="panel-heading">' + 
-					'								<h3 class="panel-title">' + 
-					'									' + note.title + 
-					'									<div class="btn-group pull-right">' + 
-					'										<button type="button" class="btn btn-sm btn-default cmd-edit" data-id="' + note.id + '" data-toggle="tooltip" title="Edit">' + 
-					'											<span class="glyphicon glyphicon-pencil"></span>' + 
-					'										</button>' + 
-					'										<button type="button" class="btn btn-sm btn-default cmd-delete" data-id="' + note.id + '" data-toggle="tooltip" title="Delete">' + 
-					'											<span class="glyphicon glyphicon-remove"></span>' + 
-					'										</button>' + 
-					'									</div>' + 
-					'								</h3>' + 
-					'								<div class="clearfix"></div>' + 
-					'							</div>' + 
-					'							<div class="panel-body">' + 
-					'								<p>' + note.content + '</p>' + 
-					'							</div>' + 
-					'						</div>';
+		htmlNote =  
+		htmlNote = String.format(htmlNoteTemplate, note.id, note.title, note.content);
 	}
 	
 	return htmlNote
@@ -225,18 +206,38 @@ var pageTempStorage = {
 	notes: []
 };
 
-// Test function
-function test() {
-	pageTempStorage = { 
-		idCounter: 5,
-		notes: [
-			{id: 1, title: 'Sample note 1', content: 'A versão mais recente do Android (Lemon Meringue Pie?) está a caminho, trazendo consigo um visual totalmente novo para o Google em geral.'},
-			{id: 2, title: 'Sample note 2', content: 'Smartphones com iOS e Android podem ser bloqueados à distância caso sejam roubados; no entanto, este recurso não é ativado por padrão. Isso vai mudar '},
-			{id: 3, title: 'Sample note 3', content: 'Certos usuários do Google Imagens viram, esta manhã, alguns resultados normais seguidos de uma mesma imagem, repetida várias vezes, de um acidente de transito'},
-			{id: 4, title: 'Sample note 4', content: 'Os aviões nos dão cada vez menos espaço para as pernas, e a situação piora quando o passageiro da frente resolve reclinar o assento.'},
-			{id: 5, title: 'Sample note 5', content: 'Aleluia! Oito meses depois de liberar streaming gratuito no iOS e Android, o Spotify agora permite que usuários do Windows Phone escutem suas músicas'}
-		]
-	};
-	
-	updateNotesPanel();
+// Template for note, {0} => id, {1} => title, {2} => content
+var htmlNoteTemplate = [
+	'<div class="panel panel-default">', 
+	'	<div class="panel-heading">',
+	'		<h3 class="panel-title">',
+	'			{1}',
+	'			<div class="btn-group pull-right">',
+	'				<button type="button" class="btn btn-sm btn-default cmd-edit" data-id="{0}" data-toggle="tooltip" title="Edit">',
+	'					<span class="glyphicon glyphicon-pencil"></span>',  
+	'				</button>', 
+	'				<button type="button" class="btn btn-sm btn-default cmd-delete" data-id="{0}" data-toggle="tooltip" title="Delete">', 
+	'					<span class="glyphicon glyphicon-remove"></span>', 
+	'				</button>', 
+	'			</div>', 
+	'		</h3>', 
+	'		<div class="clearfix"></div>', 
+	'	</div>', 
+	'	<div class="panel-body">', 
+	'		<p>{2}</p>', 
+	'	</div>', 
+	'</div>'
+].join('\n');
+
+// String.format, http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
+if (!String.format) {
+  String.format = function(format) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    return format.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number] 
+        : match
+      ;
+    });
+  };
 }
