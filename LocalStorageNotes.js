@@ -1,5 +1,8 @@
 // Load triggers
 $(document).ready(function() {	
+	// Load editor plugin on new and edit modals
+	$('#addOrEditNoteContent').ckeditor();
+
 	// New note handler
 	$('#btnNewNote').click(function() {
 		openNewNoteModal();
