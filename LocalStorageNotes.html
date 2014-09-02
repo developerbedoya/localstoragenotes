@@ -7,14 +7,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
 	<!-- jQuery -->
-	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="jquery/jquery.min.js"></script>
 	
 	<!-- Bootstrap -->
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-	
-	<!-- ckeditor -->
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css">
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+
+<!-- ckeditor -->
 	<script type="text/javascript" src="ckeditor/ckeditor.js"></script>
 	<script type="text/javascript" src="ckeditor/adapters/jquery.js"></script>
 	
@@ -71,35 +71,6 @@
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" id="deleteDialogYes">Yes</button>
 						<button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-					</div>
-				</div>
-			</div>
-		</div>
-		
-		<div class="modal fade" id="addOrEditDialog" role="dialog" aria-labelledby="addOrEditDialogTitle">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="addOrEditDialogTitle">Edit Note</h4>
-					</div>
-					<div class="modal-body">
-						<div class="row">
-							<div class="col-md-2">Title:</div>
-							<div class="col-md-10"><input type="text" class="form-control" id="addOrEditNoteTitle" value="" /></div>
-						</div>
-						<div class="row">
-							<div class="col-md-2">Content:</div>
-							<div class="col-md-10">
-								<textarea id="addOrEditNoteContent" class="form-control"></textarea>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" id="addOrEditDialogOK">OK</button>
-						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					</div>
 				</div>
 			</div>
