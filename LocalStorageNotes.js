@@ -33,6 +33,7 @@ $(document).ready(function() {
 
 function updateEditNoteHandlers() {
 	// Edit note title handler
+	$('.div-title-editable').ckeditor();
 	$('.div-title-editable').blur(function() {
 		var noteId = $(this).data('id');
 		var title = $(this).html();
@@ -43,22 +44,28 @@ function updateEditNoteHandlers() {
 		
 		updateNote(noteId, title, content);
 		updateNotesPanel();
-	});
-	$('.div-title-editable').ckeditor();
+	});	
 	
 	// Edit note content handler
-	$('.div-content-editable').blur(function() {
-		var noteId = $(this).data('id');
-		var content = $(this).html();
-		
-		// Delete \n and \t
-		content = content.replace(/\t/g,'').replace(/\n/g,'');
-		var title = getNote(noteId).title;
-		
-		updateNote(noteId, title, content);
-		updateNotesPanel();
-	});
+	// Note is saved after triggering 'blur' event at CKEDITOR own event model
 	$('.div-content-editable').ckeditor();
+	for (var idEditor in CKEDITOR.instances) {
+		if (idEditor.indexOf('noteContentEditor') > -1) {
+			var editor = CKEDITOR.instances[idEditor];
+			editor.on('blur', function(event) {
+				var noteId = $('#' + event.editor.name).data('id');
+				var content = $('#' + event.editor.name).html();
+				
+				// Delete \n and \t
+				content = content.replace(/\t/g,'').replace(/\n/g,'');
+				var title = getNote(noteId).title;
+				
+				console.log('noteId => ' + noteId + ', content => ' + content);
+				updateNote(noteId, title, content);
+				updateNotesPanel();
+			});
+		}
+	}
 }
 
 function updateNoteHandlers() {
@@ -224,7 +231,7 @@ var htmlNoteTemplate = [
 	'		</h3>', 
 	'		<div class="clearfix"></div>', 
 	'	</div>', 
-	'	<div class="panel-body div-content-editable" contenteditable="true" data-id="{0}">', 
+	'	<div class="panel-body div-content-editable" contenteditable="true" id="noteContentEditor{0}" data-id="{0}">', 
 	'		{2}', 
 	'	</div>', 
 	'</div>'
