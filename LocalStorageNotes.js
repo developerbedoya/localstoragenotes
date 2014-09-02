@@ -5,12 +5,21 @@ $(document).ready(function() {
 
 	// New note handler
 	$('#btnNewNote').click(function() {
-		openNewNoteModal();
+		var newTitle = 'New Note';
+		var newContent = '';
+		addNote(newTitle, newContent);
+		updateNotesPanel();
 	});
 	
 	// Clear notes handler
 	$('#btnClearNotes').click(function() {
 		clearAllNotes();
+	});
+	
+	// Adjust ckeditor config for avoiding leading and trailing <p>
+	CKEDITOR.on( 'instanceCreated', function( event ) {
+		var editor = event.editor;
+		editor.config.autoParagraph = false;
 	});
 	
 	// Try to restore notes
@@ -19,14 +28,41 @@ $(document).ready(function() {
 	} else {
 		updateNotesPanel();
 	}
+
 });
 
-function updateNoteHandlers() {
-	// Edit note handler
-	$('.cmd-edit').unbind('click').click(function() {
+function updateEditNoteHandler() {
+	// Edit note title handler
+	$('.div-title-editable').blur(function() {
 		var noteId = $(this).data('id');
-		openEditNoteModal(noteId);
+		var title = $(this).html();
+		
+		// Delete \n and \t
+		title = title.replace(/\t/g,'').replace(/\n/g,'');
+		var content = getNote(noteId).content;
+		
+		updateNote(noteId, title, content);
+		updateNotesPanel();
 	});
+	$('.div-title-editable').ckeditor();
+	
+	// Edit note content handler
+	$('.div-content-editable').blur(function() {
+		var noteId = $(this).data('id');
+		var content = $(this).html();
+		
+		// Delete \n and \t
+		content = content.replace(/\t/g,'').replace(/\n/g,'');
+		var title = getNote(noteId).title;
+		
+		updateNote(noteId, title, content);
+		updateNotesPanel();
+	});
+	$('.div-content-editable').ckeditor();
+}
+
+function updateNoteHandlers() {
+	updateEditNoteHandlers();
 	
 	// Delete note handler
 	$('.cmd-delete').unbind('click').click(function() {
@@ -36,45 +72,10 @@ function updateNoteHandlers() {
 	
 	// Enable Bootstrap Tooltips for buttons
 	$('button').tooltip('enable');
+	
 }
 
 // Modal functions
-function openNewNoteModal() {
-	$('#addOrEditDialogOK').unbind('click').click(function() {
-		var title = $('#addOrEditNoteTitle').val();
-		var content = $('#addOrEditNoteContent').val();
-		addNote(title, content);
-		
-		$('#addOrEditDialog').modal('hide');
-		updateNotesPanel();
-	});
-	
-	$('#addOrEditDialogTitle').html('New note');
-	$('#addOrEditNoteTitle').val('');
-	$('#addOrEditNoteContent').val('');
-	
-	// Open modal
-	$('#addOrEditDialog').modal();
-}
-
-function openEditNoteModal(noteId) {
-	$('#addOrEditDialogOK').unbind('click').click(function() {
-		var title = $('#addOrEditNoteTitle').val();
-		var content = $('#addOrEditNoteContent').val();
-		updateNote(noteId, title, content);
-		
-		$('#addOrEditDialog').modal('hide');
-		updateNotesPanel();
-	});
-	
-	var note = getNote(noteId);
-	$('#addOrEditDialogTitle').html('Edit note');
-	$('#addOrEditNoteTitle').val(note.title);
-	$('#addOrEditNoteContent').val(note.content);
-	
-	// Open modal
-	$('#addOrEditDialog').modal();
-}
 
 function openDeleteNoteModal(noteId) {
 	$('#deleteDialogYes').unbind('click').click(function() {
@@ -186,7 +187,7 @@ function restoreNotes() {
 		try {
 			notes = JSON.parse(localStorage.getItem('LocalStorageNotes'));
 		}
-		// Se não tiver notas, cria as notas iniciais
+		// Se nÃ£o tiver notas, cria as notas iniciais
 		catch (err) {}
 		
 		if (notes == null) {
@@ -214,11 +215,8 @@ var htmlNoteTemplate = [
 	'<div class="panel panel-default">', 
 	'	<div class="panel-heading">',
 	'		<h3 class="panel-title">',
-	'			{1}',
+	'			<div class="div-title-editable pull-left" contenteditable="true" data-id="{0}">{1}</div>',
 	'			<div class="btn-group pull-right">',
-	'				<button type="button" class="btn btn-sm btn-default cmd-edit" data-id="{0}" data-toggle="tooltip" title="Edit">',
-	'					<span class="glyphicon glyphicon-pencil"></span>',  
-	'				</button>', 
 	'				<button type="button" class="btn btn-sm btn-default cmd-delete" data-id="{0}" data-toggle="tooltip" title="Delete">', 
 	'					<span class="glyphicon glyphicon-remove"></span>', 
 	'				</button>', 
@@ -226,21 +224,18 @@ var htmlNoteTemplate = [
 	'		</h3>', 
 	'		<div class="clearfix"></div>', 
 	'	</div>', 
-	'	<div class="panel-body">', 
-	'		<p>{2}</p>', 
+	'	<div class="panel-body div-content-editable" contenteditable="true" data-id="{0}">', 
+	'		{2}', 
 	'	</div>', 
 	'</div>'
 ].join('\n');
 
 // String.format, http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format
 if (!String.format) {
-  String.format = function(format) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return format.replace(/{(\d+)}/g, function(match, number) { 
-      return typeof args[number] != 'undefined'
-        ? args[number] 
-        : match
-      ;
-    });
-  };
+	String.format = function(format) {
+		var args = Array.prototype.slice.call(arguments, 1);
+		return format.replace(/{(\d+)}/g, function(match, number) { 
+			return typeof args[number] != 'undefined' ? args[number] : match;
+		});
+	};
 }
