@@ -31,7 +31,7 @@ $(document).ready(function() {
 
 });
 
-function updateEditNoteHandler() {
+function updateEditNoteHandlers() {
 	// Edit note title handler
 	$('.div-title-editable').blur(function() {
 		var noteId = $(this).data('id');
