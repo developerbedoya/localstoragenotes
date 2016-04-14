@@ -1,0 +1,6 @@
+{
+  "name": "Localstoragenotes",
+  "tagline": "Pet project for learning HTML5. This is a Notes App that uses HTML5 LocalStorage.",
+  "body": "LocalStorageNotes\r\n=================\r\n\r\nPet project for learning HTML5. This is a Notes App that uses HTML5 LocalStorage for storing notes, Bootstrap 3 for design and popups, CKEditor for text input and jQuery for gluing all together ;)\r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
